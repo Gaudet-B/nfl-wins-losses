@@ -161,8 +161,11 @@ function TeamsChart({ winsByTeam }: { winsByTeam: WinsByTeam }) {
   )
 }
 
-const MemoizedTeamsChart = React.memo(TeamsChart, (prevProps, nextProps) => {
-  return prevProps.winsByTeam === nextProps.winsByTeam
-})
+export default TeamsChart
 
-export default MemoizedTeamsChart
+/** @TODO bring this back when "storytelling" feature is finished */
+// const MemoizedTeamsChart = React.memo(TeamsChart, (prevProps, nextProps) => {
+//   return prevProps.winsByTeam === nextProps.winsByTeam
+// })
+
+// export default MemoizedTeamsChart
