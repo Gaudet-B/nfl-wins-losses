@@ -1,5 +1,6 @@
+import { PropsWithChildren, useMemo } from 'react'
 import * as d3 from 'd3'
-import { useMemo } from 'react'
+import { FiltersLabelType } from './TimelineFilters'
 
 /** @TODO this can be made dynamic by attaching a ref to the parent element */
 const SVG_WIDTH = 500 as const
@@ -16,7 +17,15 @@ const endDate = new Date(LAST_SEASON + 1, 0, 1)
 // this will never change so it is defined outside of the component
 const timeScale = d3.scaleTime().domain([startDate, endDate]).range([0, 1])
 
-export function Timeline({ timeframe }: { timeframe: [number, number] }) {
+export function Timeline({
+  era,
+  timeframe,
+  setTimeframe,
+}: {
+  era: FiltersLabelType
+  timeframe: [number, number]
+  setTimeframe: (timeframe: [number, number]) => void
+}) {
   const getActiveTimeframe = useMemo(() => {
     const [start, end] = timeframe
     const startDate = new Date(start, 0, 1)
@@ -63,12 +72,16 @@ export function Timeline({ timeframe }: { timeframe: [number, number] }) {
 
   const { height, width, timelineTicks } = generateSVG
   const { activeStart, activeEnd } = getActiveTimeframe
-  console.log('activeStart', activeStart)
-  console.log('activeEnd', activeEnd)
 
   return (
     <svg width={width} height={height}>
       <g fill="none">
+        <g
+          className="fill-blue-800 font-semibold"
+          transform={`translate(20,20)`}
+        >
+          <text fontSize={24}>{era}</text>
+        </g>
         <path
           d={`M 3,${height / 2} H ${width - 3} Z`}
           stroke="black"
@@ -77,11 +90,26 @@ export function Timeline({ timeframe }: { timeframe: [number, number] }) {
         <path
           d={`M ${activeStart * (width - 10) + 5},${height / 2 - 4} V ${height / 2 + 4} H ${activeEnd * (width - 10) + 5} V ${height / 2 - 4} Z`}
           stroke="none"
-          fill="red"
+          className="fill-blue-800"
           opacity={0.5}
         />
         {timelineTicks}
       </g>
     </svg>
+  )
+}
+
+export function TimelineContainer({
+  children,
+  height,
+  width,
+}: PropsWithChildren<{ height: number; width: number }>) {
+  return (
+    <g
+      // fill="none"
+      transform={`translate(${width / 2}, 0)`}
+    >
+      {children}
+    </g>
   )
 }

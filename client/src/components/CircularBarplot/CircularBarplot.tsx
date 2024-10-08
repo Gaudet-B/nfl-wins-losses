@@ -1,45 +1,78 @@
 import { useState } from 'react'
-import { useData } from '../../hooks/useData'
-// import { TeamsTable } from './TeamsTable'
-import { TeamsChart } from './TeamsChart'
-import { Timeline } from './Timeline'
+import { Data, useData } from '../../hooks/useData'
+import { OuterContainer, SvgContainer } from './styles'
+import {
+  FiltersActionButton,
+  FiltersLabelType,
+  TimelineFilters,
+} from './TimelineFilters'
+import { BottomLayer, SvgBuilder, TopLayer } from './SvgBuilder'
 
-const DEFAULT_TIMEFRAME = [1966, 2024] as [number, number]
+const VIEW_HEIGHT = 1200
+const VIEW_WIDTH = 1100
 
-export function CircularBarplot() {
-  const [timeframe, setTimeframe] = useState(DEFAULT_TIMEFRAME)
-  const { data, isPending, isError } = useData(timeframe, 'winsByTeam')
+const DEFAULT_ERA = 'Super Bowl Era' as FiltersLabelType
+
+export function CircularBarplot({
+  dataSet,
+  timeframe,
+  setTimeframe,
+}: {
+  dataSet: Data
+  timeframe: [number, number]
+  setTimeframe: (timeframe: [number, number]) => void
+}) {
+  const [era, setEra] = useState(DEFAULT_ERA)
+  const [loadingDelay, setLoadingDelay] = useState(false)
+  const [showFilters, setShowFilters] = useState(false)
+
+  const handleShowFilters = () => setShowFilters((prev) => !prev)
+
+  const handleTimeframeChange =
+    (value: [number, number], label?: FiltersLabelType) => () => {
+      setLoadingDelay(true)
+      if (label) setEra(label)
+      if (!label) setEra(DEFAULT_ERA)
+      setTimeframe(value)
+      setTimeout(() => {
+        setLoadingDelay(false)
+      }, 1500)
+    }
+
+  const { data, isPending, isError } = useData(dataSet, 'winsByTeam')
+  // if (isPending) return <div>Loading...</div>
+  if (isError) return <div>Error...</div>
   return (
-    <div className="w-full flex flex-col items-center">
-      <div className="w-full flex gap-4">
-        <div className="flex-1">
-          <h1 className="text-2xl">NFL Wins by team</h1>
-          <h2 className="text-xl">
-            Years {timeframe[0]} - {timeframe[1]}
-          </h2>
-          <div className="w-1/2 p-2 flex flex-col gap-2">
-            <div className="p-1 flex gap-2">
-              <p>Number of seasons</p>
-              <p>{data && data?.totalSeasons}</p>
-            </div>
-            <div className="p-1 flex gap-2">
-              <p>Number of teams</p>
-              <p>
-                {data && data.winsByTeam && Object.keys(data.winsByTeam).length}
-              </p>
-            </div>
-            <div className="p-1 flex gap-2">
-              <p>Number of games</p>
-              <p>{data && data?.totalGames}</p>
-            </div>
-          </div>
-        </div>
-        <div className="flex-1 p-3 h-full flex justify-center">
-          <Timeline timeframe={timeframe} />
-        </div>
-      </div>
-      {/* <TeamsTable data={data} /> */}
-      {data && data.winsByTeam && <TeamsChart winsByTeam={data.winsByTeam} />}
-    </div>
+    <OuterContainer>
+      {/* <FiltersActionButton
+        showFilters={showFilters}
+        handleShowFilters={handleShowFilters}
+      /> */}
+      <TimelineFilters
+        loadingDelay={loadingDelay}
+        showFilters={showFilters}
+        timeframe={timeframe}
+        handleShowFilters={handleShowFilters}
+        handleTimeframeChange={handleTimeframeChange}
+      />
+      <FiltersActionButton
+        showFilters={showFilters}
+        handleShowFilters={handleShowFilters}
+      />
+      <SvgContainer>
+        <SvgBuilder height={VIEW_HEIGHT} width={VIEW_WIDTH}>
+          <TopLayer
+            era={era}
+            data={data}
+            height={VIEW_HEIGHT}
+            width={VIEW_WIDTH}
+            isPending={isPending}
+            timeframe={timeframe}
+            setTimeframe={setTimeframe}
+          />
+          {data?.winsByTeam && <BottomLayer winsByTeam={data.winsByTeam} />}
+        </SvgBuilder>
+      </SvgContainer>
+    </OuterContainer>
   )
 }

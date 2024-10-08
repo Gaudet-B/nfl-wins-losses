@@ -19,10 +19,12 @@ const TEAMS_TO_COMBINE = [
   ['New England Patriots', 'Boston Patriots'],
 ]
 
+export type WinsByTeam = Array<{ id: string; team: string; wins: number }>
+
 export type QueryResult = {
   totalSeasons: number
   totalGames: number
-  winsByTeam?: Array<{ id: string; team: string; wins: number }>
+  winsByTeam?: WinsByTeam
 }
 
 function _getDefaultInfo(dataSet: typeof data) {
@@ -49,10 +51,15 @@ function _getUniqueTeams(
     let wins = team.wins
     for (let i = 1; i < teams.length; i++) {
       const teamToCombine = teams[i]
+      console.log('teamToCombine', teamToCombine)
       const teamIndex = uniqueTeams.findIndex((t) => t.team === teamToCombine)
-      wins += uniqueTeams[teamIndex].wins
-      uniqueTeams.splice(teamIndex, 1)
-      index = uniqueTeams.findIndex((t) => t.team === teams[0])
+      console.log('teamIndex', teamIndex)
+      if (teamIndex !== -1) {
+        console.log('TEAM', uniqueTeams[teamIndex])
+        wins += uniqueTeams[teamIndex].wins
+        uniqueTeams.splice(teamIndex, 1)
+        index = uniqueTeams.findIndex((t) => t.team === teams[0])
+      }
     }
     team.wins = wins
     uniqueTeams[index] = team
@@ -83,14 +90,17 @@ function winsByTeamQuery(dataSet: typeof data): Promise<QueryResult> {
       // console.log('team to push', { team, wins: wins.length })
       teamsWins.push({ id, team, wins: wins.length })
     })
-    // console.log('teamsWins', teamsWins)
-    const winsByTeam = _getUniqueTeams(teamsWins)
+    const unsortedWinsByTeam = _getUniqueTeams(teamsWins)
+    const winsByTeam = unsortedWinsByTeam.sort((a, b) =>
+      a.team.localeCompare(b.team)
+    )
     const { totalSeasons, totalGames } = _getDefaultInfo(dataSet)
     resolve({ totalSeasons, totalGames, winsByTeam })
   })
 }
 
-function getDataSet(timeframe: readonly [number, number]) {
+/** @TODO need to adjust this to handle January games */
+export function getDataSet(timeframe: [number, number]) {
   return data.filter(
     (row) =>
       parseInt(row.schedule_season) >= timeframe[0] &&
@@ -98,11 +108,17 @@ function getDataSet(timeframe: readonly [number, number]) {
   )
 }
 
+export type Data = typeof data
+
 export function useData(
-  timeframe: readonly [number, number],
+  // timeframe: readonly [number, number],
+  dataSet: Data,
   queryKey: keyof typeof QUERY_MAP = 'default'
 ) {
-  const [dataSet] = useState(getDataSet(timeframe))
+  // const [dataSet] = useState(getDataSet(timeframe))
+  // console.log('dataSet', dataSet)
   const queryFn = QUERY_MAP[queryKey]
+  // console.log('queryFn', queryFn)
+  // console.log('query result', queryFn(dataSet))
   return useQuery({ queryKey: [queryKey], queryFn: () => queryFn(dataSet) })
 }
