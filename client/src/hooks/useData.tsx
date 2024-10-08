@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import clonedeep from 'lodash.clonedeep'
 import data from '../data/nflData.ts'
@@ -51,11 +50,8 @@ function _getUniqueTeams(
     let wins = team.wins
     for (let i = 1; i < teams.length; i++) {
       const teamToCombine = teams[i]
-      console.log('teamToCombine', teamToCombine)
       const teamIndex = uniqueTeams.findIndex((t) => t.team === teamToCombine)
-      console.log('teamIndex', teamIndex)
       if (teamIndex !== -1) {
-        console.log('TEAM', uniqueTeams[teamIndex])
         wins += uniqueTeams[teamIndex].wins
         uniqueTeams.splice(teamIndex, 1)
         index = uniqueTeams.findIndex((t) => t.team === teams[0])
@@ -72,22 +68,13 @@ function winsByTeamQuery(dataSet: typeof data): Promise<QueryResult> {
   return new Promise((resolve) => {
     const teams = [...new Set(dataSet.map((row) => row.team_home))]
     const teamsWins = [] as Array<{ id: string; team: string; wins: number }>
-    // console.log('teams', teams)
     teams.forEach((team) => {
-      // console.log('team', team)
       const wins = dataSet.filter(
         (row) =>
           (row.score_home > row.score_away && row.team_home === team) ||
           (row.score_away > row.score_home && row.team_away === team)
       )
-      // console.log('wins type', typeof wins)
-      // if (team.startsWith('A')) {
-      //   console.log('team', team)
-      //   console.log('wins', wins)
-      // }
-      // if (wins && wins.length > 0) teamsWins.push({ team, wins: wins.length })
       const id = `${team.split(' ').join('_').toLowerCase()}_${wins.length}`
-      // console.log('team to push', { team, wins: wins.length })
       teamsWins.push({ id, team, wins: wins.length })
     })
     const unsortedWinsByTeam = _getUniqueTeams(teamsWins)
@@ -115,10 +102,6 @@ export function useData(
   dataSet: Data,
   queryKey: keyof typeof QUERY_MAP = 'default'
 ) {
-  // const [dataSet] = useState(getDataSet(timeframe))
-  // console.log('dataSet', dataSet)
   const queryFn = QUERY_MAP[queryKey]
-  // console.log('queryFn', queryFn)
-  // console.log('query result', queryFn(dataSet))
   return useQuery({ queryKey: [queryKey], queryFn: () => queryFn(dataSet) })
 }

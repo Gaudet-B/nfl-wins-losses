@@ -10,7 +10,13 @@ const SVG_WIDTH = 900 as const
 /** @TODO use this for the "storytelling" part */
 const MAX_WINS = 550 as const
 
-function TeamsChart({ winsByTeam }: { winsByTeam: WinsByTeam }) {
+function TeamsChart({
+  winsByTeam,
+  totalGames,
+}: {
+  winsByTeam: WinsByTeam
+  totalGames: number
+}) {
   /**
    * @TODO handle this differently to achieve animated transitions
    *  1. Have a fixed number of "slots" for teams (based on today's teams)
@@ -161,11 +167,18 @@ function TeamsChart({ winsByTeam }: { winsByTeam: WinsByTeam }) {
   )
 }
 
-export default TeamsChart
+// export default TeamsChart
 
 /** @TODO bring this back when "storytelling" feature is finished */
-// const MemoizedTeamsChart = React.memo(TeamsChart, (prevProps, nextProps) => {
-//   return prevProps.winsByTeam === nextProps.winsByTeam
-// })
+const MemoizedTeamsChart = React.memo(TeamsChart, (prevProps, nextProps) => {
+  return prevProps.totalGames === nextProps.totalGames
+})
 
-// export default MemoizedTeamsChart
+/**
+ * @TODO
+ * 1. do a "traditional" useMutation => invalidateQueries pattern to get the SVG to re-render
+ * 2. build "storytelling" feature to animate the transitions
+ * 3. add "loading" state to the SVG?
+ */
+
+export default MemoizedTeamsChart

@@ -70,10 +70,16 @@ export function BottomLayerContainer({ children }: PropsWithChildren) {
   return <g transform={`translate(-450,-550)`}>{children}</g>
 }
 
-export function BottomLayer({ winsByTeam }: { winsByTeam: WinsByTeam }) {
+export function BottomLayer({
+  winsByTeam,
+  totalGames,
+}: {
+  winsByTeam: WinsByTeam
+  totalGames: number
+}) {
   return (
     <BottomLayerContainer>
-      <TeamsChart winsByTeam={winsByTeam} />
+      <TeamsChart winsByTeam={winsByTeam} totalGames={totalGames} />
     </BottomLayerContainer>
   )
 }

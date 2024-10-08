@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { Data, useData } from '../../hooks/useData'
 import { OuterContainer, SvgContainer } from './styles'
 import {
@@ -28,18 +29,23 @@ export function CircularBarplot({
 
   const handleShowFilters = () => setShowFilters((prev) => !prev)
 
+  const queryClient = useQueryClient()
+
   const handleTimeframeChange =
     (value: [number, number], label?: FiltersLabelType) => () => {
       setLoadingDelay(true)
       if (label) setEra(label)
       if (!label) setEra(DEFAULT_ERA)
       setTimeframe(value)
+      queryClient.invalidateQueries({ queryKey: ['winsByTeam'] })
       setTimeout(() => {
         setLoadingDelay(false)
       }, 1500)
     }
 
   const { data, isPending, isError } = useData(dataSet, 'winsByTeam')
+  console.log('data', data)
+  console.log('isPending', isPending)
   // if (isPending) return <div>Loading...</div>
   if (isError) return <div>Error...</div>
   return (
@@ -70,7 +76,12 @@ export function CircularBarplot({
             timeframe={timeframe}
             setTimeframe={setTimeframe}
           />
-          {data?.winsByTeam && <BottomLayer winsByTeam={data.winsByTeam} />}
+          {data?.winsByTeam && (
+            <BottomLayer
+              winsByTeam={data.winsByTeam}
+              totalGames={data.totalGames}
+            />
+          )}
         </SvgBuilder>
       </SvgContainer>
     </OuterContainer>

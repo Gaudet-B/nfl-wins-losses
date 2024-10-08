@@ -89,9 +89,6 @@ function FilterButton({
       disabled={loadingDelay}
     >
       {label}
-      {/* {loadingDelay && (
-        <div className="z-10 h-full w-full bg-red-700 opacity-40" />
-      )} */}
     </button>
   )
 }
@@ -136,10 +133,6 @@ export function TimelineFilters({
           })}
         </FiltersContainer>
       ))}
-      {/* <FiltersActionButton
-        showFilters={showFilters}
-        handleShowFilters={handleShowFilters}
-      /> */}
     </FiltersWrapper>
   )
 }
