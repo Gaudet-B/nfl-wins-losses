@@ -5,7 +5,6 @@ export const Route = createLazyFileRoute('/')({
   component: Index,
 })
 
-// const routes = ['/barplot', '/wordcloud'] as const
 const routes = ['/barplot'] as const
 
 function Index() {

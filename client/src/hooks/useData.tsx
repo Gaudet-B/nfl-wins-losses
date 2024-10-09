@@ -98,7 +98,6 @@ export function getDataSet(timeframe: [number, number]) {
 export type Data = typeof data
 
 export function useData(
-  // timeframe: readonly [number, number],
   dataSet: Data,
   queryKey: keyof typeof QUERY_MAP = 'default'
 ) {

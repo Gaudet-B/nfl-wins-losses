@@ -51,7 +51,6 @@ function Details({
         <text>
           {isPending ? 'Loading...' : data && data?.totalSeasons} Seasons
         </text>
-        {/* <text transform={`translate(${width / 5},0)`}>Seasons</text> */}
       </g>
       <g transform={`translate(0,${LINE_HEIGHT + 60})`}>
         <text>
@@ -62,13 +61,11 @@ function Details({
               Object.keys(data.winsByTeam).length}{' '}
           Teams
         </text>
-        {/* <text transform={`translate(${width / 5},0)`}>Teams</text> */}
       </g>
       <g transform={`translate(0,${LINE_HEIGHT + 80})`}>
         <text>
           {isPending ? 'Loading...' : data && data?.totalGames} Games Played
         </text>
-        {/* <text transform={`translate(${width / 5},0)`}>Games Played</text> */}
       </g>
     </g>
   )
@@ -80,11 +77,7 @@ export function ChartInfoContainer({
   width,
 }: PropsWithChildren<{ height: number; width: number }>) {
   return (
-    <g
-      transform={`translate(${50},-${0 / 2})`}
-      // fill="white"
-      stroke="black"
-    >
+    <g transform={`translate(${50},-${0 / 2})`} stroke="black">
       {children}
     </g>
   )
@@ -107,16 +100,13 @@ export function ChartInfo({
     <svg
       width={width}
       height={height}
-      // viewBox={`${-width / 2} ${-height / 2} ${width} ${height}`}
       viewBox={`${0 / 2} ${0 / 2} ${width} ${height}`}
-      // style={{ width: '100%', height: 'auto' }}
     >
       <g
         transform={`translate(0,${LINE_HEIGHT})`}
         stroke="black"
         strokeWidth={1}
         fill="black"
-        // className="bg-none"
       >
         <Title title={title} />
         <Timeframe timeframe={timeframe} />
@@ -124,30 +114,4 @@ export function ChartInfo({
       </g>
     </svg>
   )
-  // return (
-  //   <div className="flex flex-col justify-end">
-  //     <h1 className="text-2xl">NFL Wins by team</h1>
-  //     <h2 className="text-xl">
-  //       Years {timeframe[0]} - {timeframe[1]}
-  //     </h2>
-  //     <div className="p-2 flex flex-col gap-2">
-  //       <div className="p-1 flex gap-2">
-  //         <p>Number of seasons</p>
-  //         <p>{isPending ? 'Loading...' : data && data?.totalSeasons}</p>
-  //       </div>
-  //       <div className="p-1 flex gap-2">
-  //         <p>Number of teams</p>
-  //         <p>
-  //           {isPending
-  //             ? 'Loading...'
-  //             : data && data.winsByTeam && Object.keys(data.winsByTeam).length}
-  //         </p>
-  //       </div>
-  //       <div className="p-1 flex gap-2">
-  //         <p>Number of games</p>
-  //         <p>{isPending ? 'Loading...' : data && data?.totalGames}</p>
-  //       </div>
-  //     </div>
-  //   </div>
-  // )
 }

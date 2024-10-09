@@ -92,7 +92,6 @@ function TeamsChart({
 
       return (
         <g key={`${id}`} className="group">
-          {/** @TODO use Tailwind "groups" for consistent hover behavior */}
           <path
             id={id}
             fill={TEAM_COLOR_MAP[d.team]}
@@ -153,23 +152,18 @@ function TeamsChart({
   const { height, width, allArcs } = generateSVG
 
   return (
-    // <div className="w-2/3">
     <svg
       width={width}
       height={height}
       viewBox={`${-width / 2} ${-height / 1.7} ${width + 20} ${height + 220}`}
-      // viewBox={`${width + 200} ${height + 200} ${width * 2} ${height * 2}`}
-      // style={{ width: '100%', height: 'auto' }}
     >
       <g fill="#ffff">{allArcs}</g>
     </svg>
-    // </div>
   )
 }
 
-// export default TeamsChart
-
 /** @TODO bring this back when "storytelling" feature is finished */
+// export default TeamsChart
 const MemoizedTeamsChart = React.memo(TeamsChart, (prevProps, nextProps) => {
   return prevProps.totalGames === nextProps.totalGames
 })

@@ -12,23 +12,7 @@ export function TopLayerContainer({
   height,
   width,
 }: PropsWithChildren<{ height: number; width: number }>) {
-  // return <div className="flex justify-between">{children}</div>
-  return (
-    <g
-      transform={`translate(-${width / 2},-${height / 2})`}
-      // className="flex justify-between"
-      // width={width}
-    >
-      {/* <svg
-        width={width}
-        height={height}
-        viewBox={`${-width / 2} ${-height / 2} ${width} ${height}`}
-        // style={{ width: '100%', height: 'auto' }}
-      > */}
-      {children}
-      {/* </svg> */}
-    </g>
-  )
+  return <g transform={`translate(-${width / 2},-${height / 2})`}>{children}</g>
 }
 
 export function TopLayer({
@@ -66,7 +50,6 @@ export function TopLayer({
 }
 
 export function BottomLayerContainer({ children }: PropsWithChildren) {
-  // return <div className="-translate-y-1">{children}</div>
   return <g transform={`translate(-450,-550)`}>{children}</g>
 }
 

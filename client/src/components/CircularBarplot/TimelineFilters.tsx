@@ -97,13 +97,13 @@ export function TimelineFilters({
   loadingDelay,
   showFilters,
   timeframe,
-  handleShowFilters,
+  // handleShowFilters,
   handleTimeframeChange,
 }: {
   loadingDelay: boolean
   showFilters: boolean
   timeframe: [number, number]
-  handleShowFilters: () => void
+  // handleShowFilters: () => void
   handleTimeframeChange: (
     value: [number, number],
     label?: FiltersLabelType
