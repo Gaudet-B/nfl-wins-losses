@@ -4,7 +4,7 @@ import CircularBarplot from '../components/CircularBarplot'
 import { getDataSet } from '../hooks/useData'
 import { useQueryClient } from '@tanstack/react-query'
 
-const DEFAULT_TIMEFRAME = [1966, 2024] as [number, number]
+export const DEFAULT_TIMEFRAME = [1966, 2024] as [number, number]
 
 export const Route = createLazyFileRoute('/barplot')({
   component: Barplot,

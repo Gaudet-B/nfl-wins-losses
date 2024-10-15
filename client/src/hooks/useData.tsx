@@ -64,23 +64,41 @@ function _getUniqueTeams(
   return uniqueTeams
 }
 
+function _getWinsByTeam(dataSet: typeof data) {
+  const teams = [...new Set(dataSet.map((row) => row.team_home))]
+  const teamsWins = [] as Array<{ id: string; team: string; wins: number }>
+  teams.forEach((team) => {
+    const wins = dataSet.filter(
+      (row) =>
+        (row.score_home > row.score_away && row.team_home === team) ||
+        (row.score_away > row.score_home && row.team_away === team)
+    )
+    // const id = `${team.split(' ').join('_').toLowerCase()}_${wins.length}`
+    const id = `${team.split(' ').join('_').toLowerCase()}_wins`
+    teamsWins.push({ id, team, wins: wins.length })
+  })
+  const unsortedWinsByTeam = _getUniqueTeams(teamsWins)
+  const winsByTeam = unsortedWinsByTeam.sort((a, b) =>
+    a.team.localeCompare(b.team)
+  )
+  return winsByTeam
+}
+
+export async function getWinsByTeam(
+  dataSet: typeof data,
+  delay: number
+): Promise<WinsByTeam> {
+  return new Promise((resolve) => {
+    const winsByTeam = _getWinsByTeam(dataSet)
+    setTimeout(() => {
+      resolve(winsByTeam)
+    }, delay)
+  })
+}
+
 function winsByTeamQuery(dataSet: typeof data): Promise<QueryResult> {
   return new Promise((resolve) => {
-    const teams = [...new Set(dataSet.map((row) => row.team_home))]
-    const teamsWins = [] as Array<{ id: string; team: string; wins: number }>
-    teams.forEach((team) => {
-      const wins = dataSet.filter(
-        (row) =>
-          (row.score_home > row.score_away && row.team_home === team) ||
-          (row.score_away > row.score_home && row.team_away === team)
-      )
-      const id = `${team.split(' ').join('_').toLowerCase()}_${wins.length}`
-      teamsWins.push({ id, team, wins: wins.length })
-    })
-    const unsortedWinsByTeam = _getUniqueTeams(teamsWins)
-    const winsByTeam = unsortedWinsByTeam.sort((a, b) =>
-      a.team.localeCompare(b.team)
-    )
+    const winsByTeam = _getWinsByTeam(dataSet)
     const { totalSeasons, totalGames } = _getDefaultInfo(dataSet)
     resolve({ totalSeasons, totalGames, winsByTeam })
   })

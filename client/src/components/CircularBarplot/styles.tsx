@@ -137,3 +137,50 @@ export function FiltersWrapper({
 export function FiltersContainer({ children }: PropsWithChildren) {
   return <div className={`flex gap-2 px-2`}>{children}</div>
 }
+
+export function LoadingMask({
+  isLoading,
+  loadingDelay,
+  children,
+}: PropsWithChildren<{ isLoading: boolean; loadingDelay: boolean }>) {
+  return (
+    <g
+      className={`absolute top-0 left-0 w-full h-full flex items-center justify-center ${isLoading || loadingDelay ? 'fill-slate-900 opacity-90' : 'fill-none'}`}
+    >
+      {children}
+    </g>
+  )
+}
+
+export function FiltersButtonText({
+  children,
+  show,
+}: PropsWithChildren<{ show: boolean }>) {
+  return (
+    <div
+      className={`absolute px-3 py-2 border-2 border-slate-400 rounded-tr-lg rounded-tl-lg whitespace-nowrap -translate-x-full transition-colors duration-700 ${show ? 'bg-slate-600' : 'bg-slate-200'}`}
+    >
+      <span
+        className={`font-semibold ${show ? 'text-slate-400' : 'text-blue-900'}`}
+      >
+        {children}
+      </span>
+    </div>
+  )
+}
+
+export function FiltersButtonCaret({ show }: { show: boolean }) {
+  return (
+    <div
+      className={`relative flex flex-col items-center transition-transform duration-300 -translate-x-full ${show ? 'translate-y-[116px]' : '-z-10 translate-y-[42px]'}`}
+    >
+      <div
+        className={`px-4 flex items-center justify-center border-2 border-slate-400 rounded-br-lg rounded-bl-lg shadow-lg transition-colors duration-700 ${show ? 'bg-slate-200 hover:bg-slate-600' : 'bg-slate-600 hover:bg-slate-200'}`}
+      >
+        <div className={`text-start ${show ? '-rotate-90' : 'rotate-90'}`}>
+          <span className="font-bold text-slate-400">{'>'}</span>
+        </div>
+      </div>
+    </div>
+  )
+}

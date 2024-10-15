@@ -1,4 +1,10 @@
-import { FiltersContainer, FiltersWrapper } from './styles'
+import { PropsWithChildren } from 'react'
+import {
+  FiltersButtonCaret,
+  FiltersButtonText,
+  FiltersContainer,
+  FiltersWrapper,
+} from './styles'
 
 const FILTERS_GROUPS = [
   [
@@ -20,6 +26,17 @@ const FILTERS_LABELS = FILTERS_GROUPS.flat().map(({ label }) => label)
 export type FilterType = (typeof FILTERS_GROUPS)[number][number]
 export type FiltersLabelType = (typeof FILTERS_LABELS)[number]
 
+function ShowFiltersButton({
+  children,
+  onClick,
+}: PropsWithChildren<{ onClick: () => void }>) {
+  return (
+    <button className="z-20 -translate-y-[120px]" onClick={onClick}>
+      {children}
+    </button>
+  )
+}
+
 export function FiltersActionButton({
   showFilters,
   handleShowFilters,
@@ -28,35 +45,12 @@ export function FiltersActionButton({
   handleShowFilters: () => void
 }) {
   return (
-    <button
-      // className="z-10 -translate-y-[42px] pr-12"
-      className="z-20 -translate-y-[120px]"
-      onClick={handleShowFilters}
-    >
-      <div
-        className={`absolute px-3 py-2 border-2 border-slate-400 rounded-tr-lg rounded-tl-lg whitespace-nowrap -translate-x-full transition-colors duration-700 ${showFilters ? 'bg-slate-600' : 'bg-slate-200'}`}
-      >
-        <span
-          className={`font-semibold ${showFilters ? 'text-slate-400' : 'text-blue-900'}`}
-        >
-          {'customize timeline'}
-        </span>
-      </div>
-      <div
-        className={`relative flex flex-col items-center transition-transform duration-300 -translate-x-full ${showFilters ? 'translate-y-[116px]' : '-z-10 translate-y-[42px]'}`}
-      >
-        <div
-          // className={`px-4 flex items-center justify-center hover:from-slate-200 hover:to-slate-400 border-2 border-slate-400 rounded-br-lg rounded-bl-lg shadow-lg transition-colors duration-500 ${showFilters ? 'bg-gradient-to-br from-slate-500 to-slate-200' : 'bg-gradient-to-br from-slate-100 to-slate-300'}`}
-          className={`px-4 flex items-center justify-center border-2 border-slate-400 rounded-br-lg rounded-bl-lg shadow-lg transition-colors duration-700 ${showFilters ? 'bg-slate-200 hover:bg-slate-600' : 'bg-slate-600 hover:bg-slate-200'}`}
-        >
-          <div
-            className={`text-start ${showFilters ? '-rotate-90' : 'rotate-90'}`}
-          >
-            <span className="font-bold text-slate-400">{'>'}</span>
-          </div>
-        </div>
-      </div>
-    </button>
+    <ShowFiltersButton onClick={handleShowFilters}>
+      <FiltersButtonText show={showFilters}>
+        {'customize timeline'}
+      </FiltersButtonText>
+      <FiltersButtonCaret show={showFilters} />
+    </ShowFiltersButton>
   )
 }
 
@@ -97,13 +91,11 @@ export function TimelineFilters({
   loadingDelay,
   showFilters,
   timeframe,
-  // handleShowFilters,
   handleTimeframeChange,
 }: {
   loadingDelay: boolean
   showFilters: boolean
   timeframe: [number, number]
-  // handleShowFilters: () => void
   handleTimeframeChange: (
     value: [number, number],
     label?: FiltersLabelType

@@ -4,6 +4,7 @@ import { ChartInfo, ChartInfoContainer } from './ChartInfo'
 import TeamsChart from './TeamsChart'
 import { Timeline, TimelineContainer } from './Timeline'
 import { FiltersLabelType } from './TimelineFilters'
+import { LoadingMask } from './styles'
 
 const DEFAULT_TITLE = 'NFL Wins by team'
 
@@ -54,15 +55,21 @@ export function BottomLayerContainer({ children }: PropsWithChildren) {
 }
 
 export function BottomLayer({
-  winsByTeam,
+  isLoading,
+  loadingDelay,
   totalGames,
+  winsByTeam,
 }: {
-  winsByTeam: WinsByTeam
+  isLoading: boolean
+  loadingDelay: boolean
   totalGames: number
+  winsByTeam: WinsByTeam
 }) {
   return (
     <BottomLayerContainer>
-      <TeamsChart winsByTeam={winsByTeam} totalGames={totalGames} />
+      <LoadingMask isLoading={isLoading} loadingDelay={loadingDelay}>
+        <TeamsChart winsByTeam={winsByTeam} totalGames={totalGames} />
+      </LoadingMask>
     </BottomLayerContainer>
   )
 }
