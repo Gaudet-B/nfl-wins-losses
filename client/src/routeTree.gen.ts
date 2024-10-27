@@ -16,21 +16,23 @@ import { Route as rootRoute } from './routes/__root'
 
 // Create Virtual Routes
 
-const WordcloudLazyImport = createFileRoute('/wordcloud')()
 const BarplotLazyImport = createFileRoute('/barplot')()
+const AnimatedBackgroundLazyImport = createFileRoute('/animated-background')()
 const IndexLazyImport = createFileRoute('/')()
 
 // Create/Update Routes
-
-const WordcloudLazyRoute = WordcloudLazyImport.update({
-  path: '/wordcloud',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/wordcloud.lazy').then((d) => d.Route))
 
 const BarplotLazyRoute = BarplotLazyImport.update({
   path: '/barplot',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/barplot.lazy').then((d) => d.Route))
+
+const AnimatedBackgroundLazyRoute = AnimatedBackgroundLazyImport.update({
+  path: '/animated-background',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/animated-background.lazy').then((d) => d.Route),
+)
 
 const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
@@ -48,18 +50,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
+    '/animated-background': {
+      id: '/animated-background'
+      path: '/animated-background'
+      fullPath: '/animated-background'
+      preLoaderRoute: typeof AnimatedBackgroundLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/barplot': {
       id: '/barplot'
       path: '/barplot'
       fullPath: '/barplot'
       preLoaderRoute: typeof BarplotLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/wordcloud': {
-      id: '/wordcloud'
-      path: '/wordcloud'
-      fullPath: '/wordcloud'
-      preLoaderRoute: typeof WordcloudLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -69,42 +71,42 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
+  '/animated-background': typeof AnimatedBackgroundLazyRoute
   '/barplot': typeof BarplotLazyRoute
-  '/wordcloud': typeof WordcloudLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
+  '/animated-background': typeof AnimatedBackgroundLazyRoute
   '/barplot': typeof BarplotLazyRoute
-  '/wordcloud': typeof WordcloudLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
+  '/animated-background': typeof AnimatedBackgroundLazyRoute
   '/barplot': typeof BarplotLazyRoute
-  '/wordcloud': typeof WordcloudLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/barplot' | '/wordcloud'
+  fullPaths: '/' | '/animated-background' | '/barplot'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/barplot' | '/wordcloud'
-  id: '__root__' | '/' | '/barplot' | '/wordcloud'
+  to: '/' | '/animated-background' | '/barplot'
+  id: '__root__' | '/' | '/animated-background' | '/barplot'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
+  AnimatedBackgroundLazyRoute: typeof AnimatedBackgroundLazyRoute
   BarplotLazyRoute: typeof BarplotLazyRoute
-  WordcloudLazyRoute: typeof WordcloudLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
+  AnimatedBackgroundLazyRoute: AnimatedBackgroundLazyRoute,
   BarplotLazyRoute: BarplotLazyRoute,
-  WordcloudLazyRoute: WordcloudLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -120,18 +122,18 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/barplot",
-        "/wordcloud"
+        "/animated-background",
+        "/barplot"
       ]
     },
     "/": {
       "filePath": "index.lazy.tsx"
     },
+    "/animated-background": {
+      "filePath": "animated-background.lazy.tsx"
+    },
     "/barplot": {
       "filePath": "barplot.lazy.tsx"
-    },
-    "/wordcloud": {
-      "filePath": "wordcloud.lazy.tsx"
     }
   }
 }
