@@ -1,141 +1,100 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import backgroundData from '../../data/backgroundData'
+import SvgBuilder from './SvgBuilder'
+import SvgControls from './SvgControls'
+import debounce from 'lodash.debounce'
 
-const BUTTONS = ['Play', 'Pause', 'Randomize'] as const
-
-function Btn({
-  isPlaying,
-  text,
-  handleClick,
-}: {
-  isPlaying: boolean
-  text: (typeof BUTTONS)[number]
-  handleClick: (
-    e: React.MouseEvent<HTMLButtonElement>,
-    action: 'play' | 'pause' | 'randomize'
-  ) => void
-}) {
-  if (isPlaying && text === 'Play') return null
-  if (!isPlaying && text === 'Pause') return null
-  if (isPlaying && text === 'Randomize') return null
-  return (
-    <button
-      onClick={(e) =>
-        handleClick(e, text.toLowerCase() as 'play' | 'pause' | 'randomize')
-      }
-      className={`p-2 rounded-md ${text === 'Pause' ? 'bg-white text-blue-500' : 'bg-blue-500 text-white'}`}
-    >
-      {text}
-    </button>
-  )
+/**
+ * @TODO
+ *  - try "flipping" some of these: [inferno, magma, plasma, rainbow, sinebow, cividis, cubehelix]
+ *  - try the entire scale for these: [rainbow, sinebow, cividis, cubehelix]
+ */
+export const COLOR_PALETTE = {
+  turbo: {
+    from: 'from-[#27D7C4]',
+    // to: 'to-[#23171B]',
+    to: 'to-[#3F2B76]',
+  },
+  viridis: {
+    from: 'from-[#355f8d]',
+    to: 'to-[#440154]',
+  },
+  inferno: {
+    from: 'from-[#f37819]',
+    to: 'to-[#fcffa4]',
+  },
+  magma: {
+    from: 'from-[#641a80]',
+    to: 'to-[#000004]',
+  },
+  plasma: {
+    from: 'from-[#8f0da4]',
+    to: 'to-[#0d0887]',
+  },
+  cividis: {
+    from: 'from-[#4D566D]',
+    to: 'to-[#002051]',
+  },
+  warm: {
+    from: 'from-[#E4419D]',
+    to: 'to-[#6E40AA]',
+  },
+  cool: {
+    from: 'from-[#368CE1]',
+    to: 'to-[#6E40AA]',
+  },
+  rainbow: {
+    from: 'from-[#FF7847]',
+    to: 'to-[#6E40AA]',
+  },
+  sinebow: {
+    from: 'from-[#58FC2A]',
+    to: 'to-[#FF4040]',
+  },
+  cubehelix: {
+    from: 'from-[#CF9CDA]',
+    to: 'to-[#EFFAF5]',
+  },
 }
 
-function SvgControls({
-  isPlaying,
-  onPlay,
-  onPause,
-  onRandomize,
-}: {
-  isPlaying: boolean
-  onPlay: () => void
-  onPause: () => void
-  onRandomize: () => void
-}) {
-  const handleClick = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    action: 'play' | 'pause' | 'randomize'
-  ) => {
-    e.preventDefault()
-    if (action === 'play') onPlay()
-    if (action === 'pause') onPause()
-    if (action === 'randomize') onRandomize()
-  }
+export const COLOR_PALETTE_KEYS = Object.keys(COLOR_PALETTE) as ColorPalette[]
 
-  return (
-    <div className="absolute flex gap-2 top-12 left-0 p-4">
-      {/** @TODO make a standard Button */}
-      {BUTTONS.map((text, i) => (
-        <Btn
-          text={text}
-          isPlaying={isPlaying}
-          handleClick={handleClick}
-          key={`control-btn-${i + 1}-(${text})`}
-        />
-      ))}
-    </div>
-  )
-}
-
-function SvgBuilder({
-  fill,
-  paths,
-  height,
-  width,
-}: {
-  fill?: (i: number) => string
-  paths: Array<string>
-  height: number
-  width: number
-}) {
-  return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="max-w-full h-auto">
-      {/** @TODO play with "translate-y" more */}
-      <g className="">
-        {Array.from({ length: 10 }).map((_, i) => {
-          const idx = i === 4 || i === 5 ? 4.5 : i
-          return (
-            <>
-              {i === 4 && (
-                <g key={`wave-${i}-${i + 1}`}>
-                  <path
-                    d={paths[i]}
-                    fill={fill?.(i) ?? 'none'}
-                    className="transition-all delay-0 duration-[5000ms] ease-linear"
-                    opacity={0.5}
-                  />
-                </g>
-              )}
-              <g key={`wave-${i + 1}`}>
-                <path
-                  d={paths[i]}
-                  fill={fill?.(idx) ?? 'none'}
-                  className="transition-all delay-0 duration-[5000ms] ease-linear"
-                />
-              </g>
-              {i === 5 && (
-                <g key={`wave${i}-${i + 1}`}>
-                  <path
-                    d={paths[i]}
-                    fill={fill?.(i) ?? 'none'}
-                    className="transition-all delay-0 duration-[5000ms] ease-linear"
-                    opacity={0.5}
-                  />
-                </g>
-              )}
-            </>
-          )
-        })}
-      </g>
-    </svg>
-  )
-}
+export type ControlsPosition = 't' | 'b' | 'l' | 'r' | 'tl' | 'tr' | 'bl' | 'br'
+export type ColorPalette =
+  | 'turbo'
+  | 'viridis'
+  | 'inferno'
+  | 'magma'
+  | 'plasma'
+  | 'cividis'
+  | 'warm'
+  | 'cool'
+  | 'rainbow'
+  | 'sinebow'
+  | 'cubehelix'
 
 export default function AnimatedBackground({
   containerRef,
+  showControls,
+  colorPalette = 'cool',
+  controlsPosition = 'tl',
+  handleColorChange,
 }: {
   containerRef: DOMRect | null
+  colorPalette?: ColorPalette
+  showControls?: boolean
+  controlsPosition?: ControlsPosition
+  handleColorChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void
 }) {
   const height = containerRef?.height ?? 0
   const width = containerRef?.width ?? 0
 
   const { area, fill, randomizeLayers } = useMemo(
-    () => backgroundData(height, width),
-    [height, width]
+    () => backgroundData(height, width, colorPalette),
+    [colorPalette, height, width]
   )
 
-  const [paths, setPaths] = useState<string[]>(Array.from({ length: 10 }))
-
-  const generateNewPaths = () => {
+  const generateNewPaths = useCallback(() => {
     const randomLayers = randomizeLayers()
     if (!randomLayers || !area) return []
     return randomLayers.map((layer) => {
@@ -145,38 +104,68 @@ export default function AnimatedBackground({
       const path = area(values)
       return path || ''
     })
-  }
+  }, [area, fill, randomizeLayers])
 
-  const [isPlaying, setIsPlaying] = useState(false)
+  const [paths, setPaths] = useState<string[]>(Array.from({ length: 10 }))
+
+  const [isPlaying, setIsPlaying] = useState(true)
 
   const [intervalId, setIntervalId] = useState<number | null>(null)
 
-  const stopInterval = () => {
-    if (intervalId) clearInterval(intervalId)
-    setIntervalId(null)
-    setIsPlaying(false)
-  }
-
-  const startInterval = () => {
-    stopInterval()
-    const id = setInterval(() => {
-      setPaths(generateNewPaths())
-    }, 4950)
-    setIntervalId(id)
-    setIsPlaying(true)
-  }
-
   const handleRandomize = () => setPaths(generateNewPaths())
 
+  const stopInterval = () => {
+    if (intervalId) {
+      clearInterval(intervalId)
+      setIntervalId(null)
+      setIsPlaying(false)
+    }
+  }
+
+  const startInterval = debounce(() => {
+    if (intervalId) clearInterval(intervalId)
+    // stopInterval()
+    handleRandomize()
+    setIntervalId(() => {
+      setIsPlaying(true)
+      return setInterval(() => handleRandomize(), 4950)
+    })
+  }, 1000)
+
+  const startAnimation = () => {
+    if (intervalId) clearInterval(intervalId)
+    handleRandomize()
+    setTimeout(() => handleRandomize(), 100)
+    // setIsPlaying(true)
+    if (!intervalId) setTimeout(() => startInterval(), 5000)
+  }
+
+  const colors = COLOR_PALETTE[colorPalette]
+  const { from, to } = colors
+
   return (
-    <>
-      <SvgBuilder fill={fill} paths={paths} height={height} width={width} />
-      <SvgControls
+    <div className={`bg-gradient-to-b ${from} from-20% ${to} to-80%`}>
+      {showControls && (
+        <SvgControls
+          colorPalette={colorPalette}
+          isPlaying={isPlaying}
+          position={controlsPosition}
+          onPlay={startInterval}
+          onPause={stopInterval}
+          onRandomize={handleRandomize}
+          handleColorChange={handleColorChange}
+        />
+      )}
+      <SvgBuilder
+        fill={fill}
         isPlaying={isPlaying}
-        onPlay={startInterval}
-        onPause={stopInterval}
-        onRandomize={handleRandomize}
+        colorPalette={colorPalette}
+        start={startAnimation}
+        stop={stopInterval}
+        paths={paths}
+        height={height}
+        width={width}
       />
-    </>
+    </div>
   )
 }
