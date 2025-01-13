@@ -17,26 +17,28 @@ const endDate = new Date(LAST_SEASON + 1, 0, 1)
 // this will never change so it is defined outside of the component
 const timeScale = d3.scaleTime().domain([startDate, endDate]).range([0, 1])
 
+function getActiveTimeframe(tf: [number, number]) {
+  const [start, end] = tf
+  const startDate = new Date(start, 0, 1)
+  const endDate = new Date(end + 1, 0, 1)
+  const activeTimeframe = [startDate, endDate]
+  const activeStart = timeScale(activeTimeframe[0])
+  const activeEnd = timeScale(activeTimeframe[1])
+  return { activeTimeframe, activeStart, activeEnd }
+}
+
 export function Timeline({
   era,
   timeframe,
-  setTimeframe,
+  currentYear,
+  isPlaying,
 }: {
   era: FiltersLabelType
   timeframe: [number, number]
-  setTimeframe: (timeframe: [number, number]) => void
+  currentYear?: number
+  isPlaying?: boolean
 }) {
-  const getActiveTimeframe = useMemo(() => {
-    const [start, end] = timeframe
-    const startDate = new Date(start, 0, 1)
-    const endDate = new Date(end + 1, 0, 1)
-    const activeTimeframe = [startDate, endDate]
-    const activeStart = timeScale(activeTimeframe[0])
-    const activeEnd = timeScale(activeTimeframe[1])
-    return { activeTimeframe, activeStart, activeEnd }
-  }, [timeframe])
-
-  const generateSVG = useMemo(() => {
+  const svgParts = useMemo(() => {
     const width = SVG_WIDTH
     const height = SVG_HEIGHT
     // const margin = 10
@@ -70,8 +72,10 @@ export function Timeline({
     return { height, width, timelineTicks }
   }, [])
 
-  const { height, width, timelineTicks } = generateSVG
-  const { activeStart, activeEnd } = getActiveTimeframe
+  const { height, width, timelineTicks } = svgParts
+  const { activeStart, activeEnd } = getActiveTimeframe(
+    isPlaying && currentYear ? [1966, currentYear] : timeframe
+  )
 
   return (
     <svg width={width} height={height}>
@@ -80,7 +84,9 @@ export function Timeline({
           className="fill-blue-800 font-semibold"
           transform={`translate(20,20)`}
         >
-          <text fontSize={24}>{era}</text>
+          <text fontSize={24}>
+            {isPlaying && currentYear ? currentYear + 1 : era}
+          </text>
         </g>
         <path
           d={`M 3,${height / 2} H ${width - 3} Z`}
@@ -101,15 +107,7 @@ export function Timeline({
 
 export function TimelineContainer({
   children,
-  height,
   width,
-}: PropsWithChildren<{ height: number; width: number }>) {
-  return (
-    <g
-      // fill="none"
-      transform={`translate(${width / 2}, 0)`}
-    >
-      {children}
-    </g>
-  )
+}: PropsWithChildren<{ width: number }>) {
+  return <g transform={`translate(${width / 2}, 0)`}>{children}</g>
 }

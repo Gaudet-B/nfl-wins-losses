@@ -1,10 +1,14 @@
 import { PropsWithChildren } from 'react'
 import {
   FiltersButtonCaret,
+  FiltersButtonContainer,
   FiltersButtonText,
+  FiltersButtonWrapper,
   FiltersContainer,
+  FiltersTextContainer,
   FiltersWrapper,
 } from './styles'
+import PlayButton from './PlayButton'
 
 const FILTERS_GROUPS = [
   [
@@ -31,7 +35,10 @@ function ShowFiltersButton({
   onClick,
 }: PropsWithChildren<{ onClick: () => void }>) {
   return (
-    <button className="z-20 -translate-y-[120px]" onClick={onClick}>
+    <button
+      className="h-9 w-[186px] border-2 border-slate-400 rounded-tr-lg rounded-tl-lg"
+      onClick={onClick}
+    >
       {children}
     </button>
   )
@@ -39,18 +46,28 @@ function ShowFiltersButton({
 
 export function FiltersActionButton({
   showFilters,
+  handlePlayTimeline,
   handleShowFilters,
 }: {
   showFilters: boolean
+  handlePlayTimeline: () => void
   handleShowFilters: () => void
 }) {
   return (
-    <ShowFiltersButton onClick={handleShowFilters}>
-      <FiltersButtonText show={showFilters}>
-        {'customize timeline'}
-      </FiltersButtonText>
-      <FiltersButtonCaret show={showFilters} />
-    </ShowFiltersButton>
+    <FiltersButtonWrapper>
+      <ShowFiltersButton onClick={handleShowFilters}>
+        <FiltersTextContainer show={showFilters}>
+          <FiltersButtonText show={showFilters}>
+            {'customize timeline'}
+          </FiltersButtonText>
+          <FiltersButtonCaret show={showFilters} />
+        </FiltersTextContainer>
+      </ShowFiltersButton>
+      <FiltersButtonContainer show={showFilters}>
+        <PlayButton handleClick={handlePlayTimeline} isPlaying={false} />
+        {/* <FiltersButtonCaret show={showFilters} /> */}
+      </FiltersButtonContainer>
+    </FiltersButtonWrapper>
   )
 }
 
@@ -77,7 +94,7 @@ function FilterButton({
       onClick={handleTimeframeChange(value, label)}
       className={`p-1 font-semibold rounded-md items-stretch ${
         timeframe[0] === value[0]
-          ? 'text-blue-200 scale-110 underline font-bold'
+          ? 'text-sky-300 scale-110 underline font-bold'
           : 'text-slate-400'
       }`}
       disabled={loadingDelay}

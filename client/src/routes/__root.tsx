@@ -10,7 +10,7 @@ const NAV_LINKS = [
 function Root() {
   return (
     <>
-      <div className="relative w-full z-10 px-4 pt-2 flex justify-start gap-3 font-semibold bg-slate-200">
+      <div className="relative w-full z-20 px-4 pt-2 flex justify-start gap-3 font-semibold bg-slate-200">
         {NAV_LINKS.map((link) => (
           <Link
             key={link.label.replace(' ', '-').toLowerCase()}

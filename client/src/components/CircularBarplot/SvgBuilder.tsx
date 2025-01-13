@@ -5,6 +5,7 @@ import TeamsChart from './TeamsChart'
 import { Timeline, TimelineContainer } from './Timeline'
 import { FiltersLabelType } from './TimelineFilters'
 import { LoadingMask } from './styles'
+import { ArcPaths, Barplots } from '../../hooks/useArcPaths'
 
 const DEFAULT_TITLE = 'NFL Wins by team'
 
@@ -23,7 +24,8 @@ export function TopLayer({
   width,
   isPending,
   timeframe,
-  setTimeframe,
+  currentYear,
+  isPlaying,
 }: {
   era: FiltersLabelType
   data?: QueryResult
@@ -31,7 +33,8 @@ export function TopLayer({
   width: number
   isPending: boolean
   timeframe: [number, number]
-  setTimeframe: (timeframe: [number, number]) => void
+  currentYear?: number
+  isPlaying?: boolean
 }) {
   return (
     <TopLayerContainer height={height} width={width}>
@@ -43,8 +46,13 @@ export function TopLayer({
           title={DEFAULT_TITLE}
         />
       </ChartInfoContainer>
-      <TimelineContainer height={height} width={width}>
-        <Timeline era={era} timeframe={timeframe} setTimeframe={setTimeframe} />
+      <TimelineContainer width={width}>
+        <Timeline
+          era={era}
+          timeframe={timeframe}
+          currentYear={currentYear}
+          isPlaying={isPlaying}
+        />
       </TimelineContainer>
     </TopLayerContainer>
   )
@@ -57,18 +65,36 @@ export function BottomLayerContainer({ children }: PropsWithChildren) {
 export function BottomLayer({
   isLoading,
   loadingDelay,
-  totalGames,
   winsByTeam,
+  winTotals,
+  isPlaying,
+  arcPaths,
+  barplots,
+  height,
+  width,
 }: {
   isLoading: boolean
   loadingDelay: boolean
-  totalGames: number
   winsByTeam: WinsByTeam
+  winTotals?: WinsByTeam
+  isPlaying?: boolean
+  arcPaths: ArcPaths
+  barplots: Barplots
+  height: number
+  width: number
 }) {
   return (
     <BottomLayerContainer>
       <LoadingMask isLoading={isLoading} loadingDelay={loadingDelay}>
-        <TeamsChart winsByTeam={winsByTeam} totalGames={totalGames} />
+        <TeamsChart
+          winsByTeam={winsByTeam}
+          winTotals={winTotals}
+          isPlaying={isPlaying}
+          arcPaths={arcPaths}
+          barplots={barplots}
+          height={height}
+          width={width}
+        />
       </LoadingMask>
     </BottomLayerContainer>
   )

@@ -2,6 +2,7 @@ import {
   ControlsPosition,
   COLOR_PALETTE_KEYS,
   ColorPalette,
+  COLOR_PALETTE,
 } from './AnimatedBackground'
 
 const BUTTONS = ['Play', 'Pause', 'Randomize'] as const
@@ -98,31 +99,37 @@ function Btn({
 
 function Dropdown({
   colorPalette,
+  // textColor,
   handleColorChange,
 }: {
   colorPalette: string
+  // textColor: string
   handleColorChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void
 }) {
+  // const color = textColor.split('-')[1].slice(1, -1)
+  // console.log(color)
   return (
-    <select
-      onChange={handleColorChange}
-      className="p-2 rounded-md bg-blue-500 text-white"
-    >
-      {COLOR_PALETTE_KEYS.map((palette) => (
-        <option
-          key={palette}
-          value={palette}
-          selected={palette === colorPalette}
-        >
-          {palette}
-        </option>
-      ))}
+    <select onChange={handleColorChange} className="p-2 rounded-md bg-zinc-300">
+      {COLOR_PALETTE_KEYS.map((palette) => {
+        const color = COLOR_PALETTE[palette].from
+        return (
+          <option
+            key={palette}
+            value={palette}
+            selected={palette === colorPalette}
+            style={{ color: color.split('-')[1].slice(1, -1) }}
+          >
+            {palette}
+          </option>
+        )
+      })}
     </select>
   )
 }
 
 export default function SvgControls({
   colorPalette,
+  // textColor,
   isPlaying,
   onPlay,
   onPause,
@@ -131,6 +138,7 @@ export default function SvgControls({
   position = 'tl',
 }: {
   colorPalette: ColorPalette
+  // textColor: string
   isPlaying: boolean
   position: ControlsPosition
   onPlay: () => void
@@ -152,16 +160,17 @@ export default function SvgControls({
     <div className={`absolute flex ${POSITION_MAP[position]}`}>
       <div className="p-4 flex gap-2">
         {/** @TODO make a standard Button */}
-        {BUTTONS.map((text, i) => (
+        {/* {BUTTONS.map((text, i) => (
           <Btn
             text={text}
             isPlaying={isPlaying}
             handleClick={handleClick}
             key={`control-btn-${i + 1}-(${text})`}
           />
-        ))}
+        ))} */}
         <Dropdown
           colorPalette={colorPalette}
+          // textColor={COLOR_PALETTE[colorPalette].to}
           handleColorChange={handleColorChange}
         />
       </div>

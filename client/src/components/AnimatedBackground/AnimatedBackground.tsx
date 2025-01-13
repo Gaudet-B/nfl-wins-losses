@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import backgroundData from '../../data/backgroundData'
 import SvgBuilder from './SvgBuilder'
 import SvgControls from './SvgControls'
@@ -148,6 +148,7 @@ export default function AnimatedBackground({
       {showControls && (
         <SvgControls
           colorPalette={colorPalette}
+          // textColor={to}
           isPlaying={isPlaying}
           position={controlsPosition}
           onPlay={startInterval}
